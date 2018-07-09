@@ -1,3 +1,7 @@
+import * as datasource from "./dataSource";
+
+import { Observable, Subject, asapScheduler, pipe, of, from, interval, merge, fromEvent } from 'rxjs';
+
 var canvas = <HTMLCanvasElement> document.getElementById('canvas');
 var context = canvas.getContext('2d');
 
@@ -41,6 +45,17 @@ export class Pixel {
 	}
 }
 
+export class TextSubstrate extends Substrate {
+	
+	constructor (source: any, text: any) {
+		super(source);	
+		var txt = new paper.PointText(this.source);
+		txt.content = text;
+		txt.fillColor = "black";
+		txt.bringToFront(); 
+	}
+}
+
 export class Snap extends Substrate {
 
 	constructor (source: any) {
@@ -51,22 +66,24 @@ export class Snap extends Substrate {
 	}
 }
 
-export class Highlight extends Substrate {
+export class DrawPixel extends Substrate {
 
 	constructor (source: any, color: any){
 		super(source);
 		console.log(this.source);
 
+
+		var p = new paper.Point(this.source.x, this.source.y);
+		var rect = new paper.Rectangle(p, new paper.Size(2,2));
+		var path = new paper.Path.Rectangle(rect);
+
 		if (this.source.color) {
-			context.fillStyle = this.source.color;
-			context.strokeStyle = this.source.color;
+			path.strokeColor = this.source.color;
+			path.fillColor = this.source.color;
 		} else {
-			context.fillStyle = color;
-			context.strokeStyle = color; 
+			path.strokeColor = color;
+			path.fillColor = color; 
 		}
-		console.log(this.source.x + " " + this.source.y);
-		context.strokeRect(this.source.x, this.source.y, 2, 2);
-		context.fillRect(this.source.x, this.source.y, 2, 2)
 	}
 
 }
@@ -75,27 +92,31 @@ export class MarkerPlacer extends Substrate {
 
 	constructor (source: any) {
 		super(source);	
-		var marker = new Image();
-		marker.src = "marker.png";
-		
-		var xPos = this.source.x;
-		var yPos = this.source.y;
-		marker.onload = function (){
-			context.drawImage(marker, xPos - marker.width/40, yPos - marker.height/20, marker.width/20, marker.height/20);
-		}
+		let img = new Image();
+		img.src = "marker.png";
+
+		let xPos = this.source.x;
+		let yPos = this.source.y;
+		let point = new paper.Point( xPos, yPos);
+		let image = new paper.Raster({source: datasource.markerImage.url, position: point});
+		image.height = img.height/20;
+		image.width = img.width/20;
 	}
+
 }
 
 export class CreateRectangle extends Substrate {
 
-	constructor(source: any){
+	constructor(source: any, size: any){
 		super(source);
-		
-		context.beginPath();
-		context.strokeStyle = "rgb(200,100,100)";
-		var rectangle = new paper.Rectangle(this.source.x - 5, this.source.y - 5, 20, 20);
+		console.log(this.source);
+		var rectangle = new paper.Rectangle(this.source.x - 5, this.source.y - 5, size.width, size.height);
 		var path = new paper.Path.Rectangle(rectangle);
 		path.strokeColor = 'black';
+		//var rectangle = new paper.Rectangle(650, 80, 15, 15);
+		//var path = new paper.Path.Rectangle(rectangle);
+		//path.strokeColor = 'black';
+		
 	}
 }
 
@@ -104,11 +125,10 @@ export class Connection extends Substrate {
 	constructor(source: any){
 		super(source);
 		console.log(this.source);
-		context.strokeStyle = "rgb(200,100,100)";
-		context.beginPath();
-		context.moveTo(this.source[0].x, this.source[0].y);
-		context.lineTo(this.source[1].x, this.source[1].y);
-		context.stroke();
+		var p1 = new paper.Point(this.source[0].x, this.source[0].y);
+		var p2 = new paper.Point(this.source[1].x, this.source[1].y);
+		var path = new paper.Path.Line(p1, p2);
+		path.strokeColor = 'red';
 	}	
 
 }
@@ -143,16 +163,12 @@ class Grid {
 	}
 }
 
-export class DisplaySubstrate extends Substrate {
+export class ImageSubstrate extends Substrate {
 	
-	constructor(source:any){
+	constructor(source:any, img: any){
 		super(source);	
-		console.log(this.source);
-		var image = new Image();
-		image.src = this.source.url;
-		image.onload = function (){
-			context.drawImage(image, 0, 0);
-		}
+		console.log(img.url);	
+		var image = new paper.Raster({source: img.url, position: this.source});
 	}
 }
 
@@ -162,5 +178,10 @@ export class MoveSubstrate extends Substrate {
 	constructor(source: any){
 		super(source);
 		console.log(this.source);
+		let mousemove = fromEvent(canvas, 'mousemove');
+		mousemove.subscribe((e: any) => {
+			this.source.x = e.x;
+			this.source.y = e.y;
+		});
 	}
 }

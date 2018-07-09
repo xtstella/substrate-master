@@ -17,7 +17,9 @@ let cityArray: { id: number, name: string, x: number, y: number }[] = [
     { "id": 0, "name": "Paris", "x": 321, "y":200 },
     { "id": 1, "name": "hahaha", "x": 521, "y":400  }
 ];
-export let c1 = new CityInfo(0, "Paris", 520, 280);
+export let c0 = new CityInfo(0, "Paris", 321, 200);
+export let c1 = new CityInfo(1, "Lyon", 407, 300);
+export let c2 = new CityInfo(2, "haha", 350, 400);
 
 
 export class ImageSource {
@@ -27,7 +29,7 @@ export class ImageSource {
 	}
 }
 export let franceImage = new ImageSource("../src/france.svg");
-
+export let markerImage = new ImageSource("marker.png");
 
 
 export class Mouse  {

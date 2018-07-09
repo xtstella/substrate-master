@@ -2,63 +2,63 @@ import * as substrate from "./substrate";
 import * as datasource from "./dataSource";
 
 import { Observable, Subject, asapScheduler, pipe, of, from, interval, merge, fromEvent } from 'rxjs';
-import { map, filter, debounceTime, tap, switchAll, distinctUntilChanged } from 'rxjs/operators';
-
 
 var canvas = <HTMLCanvasElement> document.getElementById('canvas');
 var context = canvas.getContext('2d');
 
 window.onload = function() {
+	
 	paper.setup(canvas);
-	var p = new paper.Point(250,200);
-	console.log(p);
+	let title = new substrate.TextSubstrate(new paper.Point(10,10), "France");
 
-	var img = new paper.Raster({source: 'france.svg', position: new paper.Point(150,90)});
-	var txt = new paper.PointText(p);
-	txt.content = "Paris";
-	txt.fillColor = "black";
-	txt.bringToFront(); 
+	let bgImage = new substrate.ImageSubstrate(new paper.Point(150,90), datasource.franceImage);
 
-	//let rect = new substrate.CreateRectangle( new paper.Point(600, 600));
-	var rectangle = new paper.Rectangle(20, 20, 60, 60);
-	var path = new paper.Path.Rectangle(rectangle);
-	path.strokeColor = 'black';
+	let parisPoint = new paper.Point(310,160);
+	let parisPixel = new substrate.DrawPixel(parisPoint, "rgb(200,100,100)");
+	let parisText = new substrate.TextSubstrate(parisPoint, "Paris");
+	
+//	txt.onMouseDrag = function(event: paper.MouseEvent){
+	//	txt.position = new paper.Point(event.point.x, event.point.y);
+//	}
+	
+	let p1 = new substrate.DrawPixel(datasource.c1,"rgb(200,100,100)" );
+	let p2 = new substrate.DrawPixel(datasource.c2,"rgb(200,100,100)" );
+
+	let rect = new substrate.CreateRectangle(new paper.Point(650, 80), new paper.Size(15,15));
+
+	//let connect = new substrate.Connection([parisText, rect]);
+
+	let mousedown = fromEvent(canvas, 'mousedown');
+	mousedown.subscribe((source: any) => {
+		console.log(source);
+		let pixel = new substrate.Pixel (source.x - canvas.offsetLeft, source.y - canvas.offsetTop, 255, 100, 100);
+		//let snap = new Snap(pixel);
+		let highlightPixel = new substrate.DrawPixel(pixel, "rgb(200,100,100)");
+		let markerPlacer = new substrate.MarkerPlacer(highlightPixel);
+	});	
+	
+	/*moveInstrument.onMouseDrag = function(event) {
+		let rect = new substrate.CreateRectangle(new paper.Point(650, 80), new paper.Size(15,15));
+
+		var Move = new substrate.MoveSubstrate(rect);		
+	}*/
+	
 }
 
-let buildings = new substrate.Highlight(datasource.c1,"rgb(200,100,100)" );
-//let display = new substrate.DisplaySubstrate(datasource.franceImage);
 
-let mousedown = fromEvent(canvas, 'mousedown');
-let source = mousedown;
-let subscription = source.subscribe((source: any) => {
-	console.log(source);
-	let pixel = new substrate.Pixel (source.x - canvas.offsetLeft, source.y - canvas.offsetTop, 255, 100, 100);
-	//let snap = new Snap(pixel);
-	let highlightPixel = new substrate.Highlight(pixel, "rgb(200,100,100)");
-	let markerPlacer = new substrate.MarkerPlacer(highlightPixel);
-});	
+/*	mousedown.subscribe((source: any) => {
+		console.log(source);
+		let pixel = new substrate.Pixel (source.x - canvas.offsetLeft, source.y - canvas.offsetTop, 255, 100, 100);
+		//let snap = new Snap(pixel);
+		let highlightPixel = new substrate.Highlight(pixel, "rgb(200,100,100)");
+		let markerPlacer = new substrate.MarkerPlacer(highlightPixel);
+		//var Move = new substrate.MoveSubstrate(rect);
 
-
-
-// We start by defining an empty variable that is visible by both
-// mouse handlers.
-var myPath: any;
-
-function onMouseDown(event: any) {
-	// The mouse was clicked, so let's put a newly created Path into
-	// myPath, give it the color black and add the location as the
-	// path's first segment.
-	myPath = new paper.Path();
-	myPath.strokeColor = 'black';
-	myPath.add(event.point);
-}
-
-function onMouseUp(event: any) {
-	// The mouse was released, so we add the new location as the end
-	// segment of the line.
-	myPath.add(event.point);
-}
-
+	});	*/
+	
+	//let mousedown = fromEvent(canvas, 'mousedown');
+	//mousedown.subscribe((source: any) => {
+//	});
 
 
 
