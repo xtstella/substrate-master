@@ -21,7 +21,7 @@ class Substrate {
 					this.source[i] = a[i];
 				}
 			}
-			
+
 		} else {		
 			if (a.source) {
 				this.source = a.source;
@@ -29,7 +29,7 @@ class Substrate {
 				this.source = a;
 			}	
 		}
-		
+
 	}
 }
 
@@ -46,7 +46,7 @@ export class Pixel {
 }
 
 export class TextSubstrate extends Substrate {
-	
+
 	constructor (source: any, text: any) {
 		super(source);	
 		var txt = new paper.PointText(this.source);
@@ -92,7 +92,16 @@ export class MarkerPlacer extends Substrate {
 
 	constructor (source: any) {
 		super(source);	
-		let img = new Image();
+		var marker = new Image();
+		marker.src = "marker.png";
+
+		var xPos = this.source.x;
+		var yPos = this.source.y;
+		marker.onload = function (){
+			context.drawImage(marker, xPos - marker.width/40, yPos - marker.height/20, marker.width/20, marker.height/20);
+		}
+
+		/*		let img = new Image();
 		img.src = "marker.png";
 
 		let xPos = this.source.x;
@@ -100,23 +109,26 @@ export class MarkerPlacer extends Substrate {
 		let point = new paper.Point( xPos, yPos);
 		let image = new paper.Raster({source: datasource.markerImage.url, position: point});
 		image.height = img.height/20;
-		image.width = img.width/20;
+		image.width = img.width/20;*/
 	}
 
 }
 
 export class CreateRectangle extends Substrate {
 
+	path: any;
+	rectangle: any;
 	constructor(source: any, size: any){
 		super(source);
 		console.log(this.source);
-		var rectangle = new paper.Rectangle(this.source.x - 5, this.source.y - 5, size.width, size.height);
-		var path = new paper.Path.Rectangle(rectangle);
-		path.strokeColor = 'black';
+		this.rectangle = new paper.Rectangle(this.source.x - 5, this.source.y - 5, size.width, size.height);
+		this.path = new paper.Path.Rectangle(this.rectangle);
+		this.path.strokeColor = 'black';
+
 		//var rectangle = new paper.Rectangle(650, 80, 15, 15);
 		//var path = new paper.Path.Rectangle(rectangle);
 		//path.strokeColor = 'black';
-		
+
 	}
 }
 
@@ -134,37 +146,37 @@ export class Connection extends Substrate {
 }
 
 class Grid {
-    static origin = {x: 0, y: 0};
+	static origin = {x: 0, y: 0};
 	w: any;
 	h: any;
 	linewidth: any;
 	color: string;
-	
-    constructor (width:any, height:any, linewidth:any, color: string) {
+
+	constructor (width:any, height:any, linewidth:any, color: string) {
 		this.w = width;
 		this.h = height;
 		this.linewidth = linewidth;
 		this.color = color;
-		
+
 		for (let x=0; x<this.w; x+=20){
 			for (let y=0; y<this.h; y+=20){
 				context.beginPath();
 				context.strokeStyle = this.color;
 				context.moveTo(x, 0);
 				context.lineTo(x, this.h);
-            	//context.stroke();
+				//context.stroke();
 				context.moveTo(0, y);
-            	context.lineTo(this.w, y);
-            	context.stroke();
-			
+				context.lineTo(this.w, y);
+				context.stroke();
+
 			}
 		}
-		
+
 	}
 }
 
 export class ImageSubstrate extends Substrate {
-	
+
 	constructor(source:any, img: any){
 		super(source);	
 		console.log(img.url);	
@@ -174,14 +186,16 @@ export class ImageSubstrate extends Substrate {
 
 
 export class MoveSubstrate extends Substrate {
-	
-	constructor(source: any){
+
+	constructor(source: any, object: any){
 		super(source);
 		console.log(this.source);
-		let mousemove = fromEvent(canvas, 'mousemove');
-		mousemove.subscribe((e: any) => {
-			this.source.x = e.x;
-			this.source.y = e.y;
-		});
+		console.log(object.rectangle);
+		/*		let mousemove = fromEvent(canvas, 'mousemove');
+		mousemove.subscribe((e: any) => {*/
+		object.path.position.x = this.source.x;
+		object.path.position.y = this.source.y;
+		//		let path = new paper.Path.Rectangle(this.rectangle);
+		/*		});*/
 	}
 }

@@ -57,9 +57,16 @@ export class Mouse  {
 }
 export let mouse = new Mouse();
 
+export let pTitle = new paper.Point(10,10);
+export let pRect = new paper.Point(650, 80);
+export let parisPoint = new paper.Point(310,160);
+export let pBgImage = new paper.Point(150,90);
 
 
+export let tTitle = "France";
+export let tParis = "Paris";
 
+export let cPixel = "rgb(200,100,100)";
 /*
 class Roads {
 
