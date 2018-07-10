@@ -30,6 +30,7 @@ window.onload = function() {
 /*	title.onMouseDrag = function(event: paper.MouseEvent){
 		title.position = new paper.Point(event.point.x, event.point.y);
 	}*/
+	/************ normal way  *************/
 	rect.path.onMouseDrag = function(event: paper.MouseEvent){
 		rect.path.position = new paper.Point(event.point.x, event.point.y);
 	}
