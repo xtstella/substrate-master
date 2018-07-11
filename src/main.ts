@@ -18,22 +18,23 @@ window.onload = function() {
 	
 	let p1 = new substrate.DrawPixel(DS.c1, DS.cPixel);
 	let p2 = new substrate.DrawPixel(DS.c2, DS.cPixel);
-
+	let snap2 = new substrate.Snap(p2);
+	
 	let title = new substrate.TextSubstrate(DS.pTitle, DS.tTitle);
 	
 	let pixelRect = new substrate.DrawPixel(DS.pRect, DS.cPixel);
 	let rect = new substrate.CreateRectangle(pixelRect, new paper.Size(15,15));
 	let connect = new substrate.Connection([title, rect]);
 	
-	//let connect1 = new substrate.Connection([bgImage, parisText]);
+	//let connect1 = new substrate.Connection([p1, rect]);
 
 /*	title.onMouseDrag = function(event: paper.MouseEvent){
 		title.position = new paper.Point(event.point.x, event.point.y);
 	}*/
 	/************ normal way  *************/
-	rect.path.onMouseDrag = function(event: paper.MouseEvent){
+/*	rect.path.onMouseDrag = function(event: paper.MouseEvent){
 		rect.path.position = new paper.Point(event.point.x, event.point.y);
-	}
+	}*/
 
 	let mouseup = fromEvent(canvas, 'mouseup');
 	let mousemove = fromEvent(canvas, 'mousemove');
@@ -44,30 +45,39 @@ window.onload = function() {
 	);
 	
 	let observerDown = function (source: any){
-		//rect.path.remove();
-		let pixel = new substrate.Pixel (source.x - canvas.offsetLeft, source.y - canvas.offsetTop, 255, 100, 100);
-		//let snap = new Snap(pixel);
+		pixelRect.path.remove();
+		rect.path.remove();
+		connect.path.remove();
+		//connect1.path.remove();
+/*		let pixel = new substrate.Pixel (source.x - canvas.offsetLeft, source.y - canvas.offsetTop, 255, 100, 100);
 		let highlightPixel = new substrate.DrawPixel(pixel, DS.cPixel);
-		let markerPlacer = new substrate.MarkerPlacer(highlightPixel);
+		let markerPlacer = new substrate.MarkerPlacer(highlightPixel);*/
 	}
 	
+	let observerUP = function (source: any){
+		let p = new paper.Point(source.x - canvas.offsetLeft, source.y - canvas.offsetTop);
+		pixelRect = new substrate.DrawPixel(p, DS.cPixel);
+		rect = new substrate.CreateRectangle(pixelRect, new paper.Size(15,15));
+		connect = new substrate.Connection([title, rect]);
+		//connect1 = new substrate.Connection([p1, rect]);
+	}	
 	let observerMove = function (source: any){
 		console.log(source);
 		//let move = new substrate.MoveSubstrate (source, rect);
 		
-		let rect = new substrate.CreateRectangle(new paper.Point(source.x - canvas.offsetLeft, source.y - canvas.offsetTop), new paper.Size(15,15));
+		let rect1 = new substrate.CreateRectangle(new paper.Point(source.x - canvas.offsetLeft, source.y - canvas.offsetTop), new paper.Size(15,15));
 		
 		let connect = new substrate.Connection([title, rect]);
 		
 		/*let rect = new substrate.CreateRectangle(new paper.Point(source.x - canvas.offsetLeft, source.y - canvas.offsetTop), new paper.Size(15,15));*/
 	}
 	
-/*	mousedown.subscribe(observerDown);
-	mousedrag.subscribe(observerMove);*/
-	/*
+	mousedown.subscribe(observerDown);
+	//mousedrag.subscribe(observerMove);
+	mouseup.subscribe(observerUP)
 
 
-*/
+
 
 	/*un comment this */	
 /*	let mousedown = fromEvent(canvas, 'mousedown');

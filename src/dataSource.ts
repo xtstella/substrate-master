@@ -1,6 +1,18 @@
 var canvas = <HTMLCanvasElement> document.getElementById('canvas');
 var context = canvas.getContext('2d');
 
+export class Pixel {
+	x: number;
+	y: number;
+	color: string;
+
+	constructor(x:number, y:number, r:number, g: number, b: number){
+		this.x = x;
+		this.y = y;
+		this.color = "rgb("+ r + "," + g +"," + b + ")";
+	}
+}
+
 export class CityInfo {
 	id: number;
 	name: string;
@@ -72,3 +84,34 @@ class Roads {
 
 
 }*/
+
+
+class Grid {
+	static origin = {x: 0, y: 0};
+	w: any;
+	h: any;
+	linewidth: any;
+	color: string;
+
+	constructor (width:any, height:any, linewidth:any, color: string) {
+		this.w = width;
+		this.h = height;
+		this.linewidth = linewidth;
+		this.color = color;
+
+		for (let x=0; x<this.w; x+=20){
+			for (let y=0; y<this.h; y+=20){
+				context.beginPath();
+				context.strokeStyle = this.color;
+				context.moveTo(x, 0);
+				context.lineTo(x, this.h);
+				//context.stroke();
+				context.moveTo(0, y);
+				context.lineTo(this.w, y);
+				context.stroke();
+
+			}
+		}
+
+	}
+}
