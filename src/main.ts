@@ -1,5 +1,7 @@
-import * as substrate from "./substrate";
+import {ImageSubstrate, DrawPixel,TextSubstrate, Snap, CreateRectangle, Connection, MarkerPlacer} from "./substrate";
+import { InfoExtractor } from './instruments';
 import * as DS from "./dataSource";
+
 
 import { Observable, Subject, asapScheduler, pipe, of, from, interval, merge, fromEvent } from 'rxjs';
 import {mergeMap, takeUntil } from 'rxjs/operators';
@@ -11,20 +13,26 @@ window.onload = function() {
 	
 	paper.setup(canvas);
 
-	let bgImage = new substrate.ImageSubstrate(DS.pBgImage, DS.franceImage);
+	let bgImage = new ImageSubstrate(DS.pBgImage, DS.franceImage);
 	
-	let parisPixel = new substrate.DrawPixel(DS.parisPoint, DS.cPixel);
-	let parisText = new substrate.TextSubstrate(parisPixel, DS.tParis);
+	let parisPixel = new DrawPixel(DS.parisPoint, DS.cPixel);
+	let parisText = new TextSubstrate(parisPixel, DS.tParis);
 	
-	let p1 = new substrate.DrawPixel(DS.c1, DS.cPixel);
-	let p2 = new substrate.DrawPixel(DS.c2, DS.cPixel);
-	let snap2 = new substrate.Snap(p2);
+	let p1 = new DrawPixel(DS.c1, DS.cPixel);
+	let p2 = new DrawPixel(DS.c2, DS.cPixel);
+	let snap2 = new Snap(p2);
 	
-	let title = new substrate.TextSubstrate(DS.pTitle, DS.tTitle);
+	let title = new TextSubstrate(DS.pTitle, DS.tTitle);
 	
-	let pixelRect = new substrate.DrawPixel(DS.pRect, DS.cPixel);
-	let rect = new substrate.CreateRectangle(pixelRect, new paper.Size(15,15));
-	let connect = new substrate.Connection([title, rect]);
+	let pixelRect = new DrawPixel(DS.pRect, DS.cPixel);
+	let rect = new CreateRectangle(pixelRect, new paper.Size(15,15));
+	let connect = new Connection([title, rect]);
+	
+	let infoExtractor = new InfoExtractor(DS.positionInfoExtractor);
+	
+	function onMouseDown(event: any) {
+		infoExtractor.source = event.point;
+	}
 	
 	//let connect1 = new substrate.Connection([p1, rect]);
 
@@ -56,37 +64,37 @@ window.onload = function() {
 	
 	let observerUP = function (source: any){
 		let p = new paper.Point(source.x - canvas.offsetLeft, source.y - canvas.offsetTop);
-		pixelRect = new substrate.DrawPixel(p, DS.cPixel);
-		rect = new substrate.CreateRectangle(pixelRect, new paper.Size(15,15));
-		connect = new substrate.Connection([title, rect]);
+		pixelRect = new DrawPixel(p, DS.cPixel);
+		rect = new CreateRectangle(pixelRect, new paper.Size(15,15));
+		connect = new Connection([title, rect]);
 		//connect1 = new substrate.Connection([p1, rect]);
 	}	
 	let observerMove = function (source: any){
-		console.log(source);
 		//let move = new substrate.MoveSubstrate (source, rect);
 		
-		let rect1 = new substrate.CreateRectangle(new paper.Point(source.x - canvas.offsetLeft, source.y - canvas.offsetTop), new paper.Size(15,15));
+		let rect1 = new CreateRectangle(new paper.Point(source.x - canvas.offsetLeft, source.y - canvas.offsetTop), new paper.Size(15,15));
 		
-		let connect = new substrate.Connection([title, rect]);
+		let connect = new Connection([title, rect]);
 		
 		/*let rect = new substrate.CreateRectangle(new paper.Point(source.x - canvas.offsetLeft, source.y - canvas.offsetTop), new paper.Size(15,15));*/
 	}
 	
+/*
 	mousedown.subscribe(observerDown);
 	//mousedrag.subscribe(observerMove);
 	mouseup.subscribe(observerUP)
 
+*/
 
 
 
 	/*un comment this */	
-/*	let mousedown = fromEvent(canvas, 'mousedown');
-	mousedown.subscribe((source: any) => {
-		console.log(source);
-		let pixel = new substrate.Pixel (source.x - canvas.offsetLeft, source.y - canvas.offsetTop, 255, 100, 100);
+	/*mousedown.subscribe((source: any) => {
+		let coord = new paper.Point(source.x, source.y)
+		let pixel = new DrawPixel (coord,"rgb(200,100,100)");
 		//let snap = new Snap(pixel);
-		let highlightPixel = new substrate.DrawPixel(pixel, "rgb(200,100,100)");
-		let markerPlacer = new substrate.MarkerPlacer(highlightPixel);
+		let highlightPixel = new DrawPixel(pixel, "rgb(200,100,100)");
+		let markerPlacer = new MarkerPlacer(highlightPixel);
 	});	*/
 	/*un comment this */
 	

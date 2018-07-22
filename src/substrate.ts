@@ -5,7 +5,7 @@ import { Observable, Subject, asapScheduler, pipe, of, from, interval, merge, fr
 var canvas = <HTMLCanvasElement> document.getElementById('canvas');
 var context = canvas.getContext('2d');
 
-class Substrate {
+export class Substrate {
 
 	source: any;
 	constructor(a: any){
@@ -48,7 +48,6 @@ export class Snap extends Substrate {
 
 	constructor (source: any) {
 		super(source);	
-		console.log(this.source);
 		this.source.x = this.source.x + 20;
 		this.source.y = this.source.y + 20;
 	}
@@ -59,8 +58,6 @@ export class DrawPixel extends Substrate {
 	path: any;
 	constructor (source: any, color: any){
 		super(source);
-		console.log(this.source);
-
 
 		var p = new paper.Point(this.source.x, this.source.y);
 		var rect = new paper.Rectangle(p, new paper.Size(2,2));
@@ -77,30 +74,29 @@ export class DrawPixel extends Substrate {
 
 }
 
+paper.Raster.prototype.rescale = function(width: any, height: any) {
+    this.scale(width / this.width, height / this.height);
+};
+
 export class MarkerPlacer extends Substrate {
 
 	constructor (source: any) {
 		super(source);	
-		var marker = new Image();
-		marker.src = "marker.png";
-
-		var xPos = this.source.x;
-		var yPos = this.source.y;
-		marker.onload = function (){
-			context.drawImage(marker, xPos - marker.width/40, yPos - marker.height/20, marker.width/20, marker.height/20);
-		}
-
-/*		let img = new Image();
-		img.src = "marker.png";
 
 		let xPos = this.source.x;
 		let yPos = this.source.y;
-		let point = new paper.Point( xPos, yPos);
-		let image = new paper.Raster({source: datasource.markerImage.url, position: point});
-		image.height = img.height/20;
-		image.width = img.width/20;*/
-	}
+		var imagePosition = new paper.Point(xPos, yPos);	
 
+		var raster = new paper.Raster({source: datasource.markerImage.url, position: imagePosition});
+
+		raster.on('load', function() {  
+			var img = new Image();
+			img.src = "marker.png";		
+			var imageSize = new paper.Size(img.width/20, img.height/20);
+			raster.rescale(img.width/20, img.height/20);
+		});
+
+	}
 }
 
 export class CreateRectangle extends Substrate {
@@ -109,7 +105,6 @@ export class CreateRectangle extends Substrate {
 	rectangle: any;
 	constructor(source: any, size: any){
 		super(source);
-		console.log(this.source);
 		this.rectangle = new paper.Rectangle(this.source.x - 5, this.source.y - 5, size.width, size.height);
 		this.path = new paper.Path.Rectangle(this.rectangle);
 		this.path.strokeColor = 'black';
@@ -125,7 +120,6 @@ export class Connection extends Substrate {
 	path: any;
 	constructor(source: any){
 		super(source);
-		console.log(this.source);
 		var p1 = new paper.Point(this.source[0].x, this.source[0].y);
 		var p2 = new paper.Point(this.source[1].x, this.source[1].y);
 		this.path = new paper.Path.Line(p1, p2);
@@ -138,7 +132,6 @@ export class ImageSubstrate extends Substrate {
 
 	constructor(source:any, img: any){
 		super(source);	
-		console.log(img.url);	
 		var image = new paper.Raster({source: img.url, position: this.source});
 	}
 }
@@ -147,8 +140,6 @@ export class MoveSubstrate extends Substrate {
 
 	constructor(source: any, object: any){
 		super(source);
-		console.log(this.source);
-		console.log(object.rectangle);
 		/*		let mousemove = fromEvent(canvas, 'mousemove');
 		mousemove.subscribe((e: any) => {*/
 		object.path.position.x = this.source.x;

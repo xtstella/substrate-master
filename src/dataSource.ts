@@ -57,12 +57,12 @@ export class Mouse  {
 		this.x = event.x - canvas.offsetLeft;
 		this.y = event.y - canvas.offsetTop;
 	}
-    mouseDown = (event: MouseEvent) => {
+    public mouseDown = (event: MouseEvent) => {
 		this.x = event.x - canvas.offsetLeft;
 		this.y = event.y - canvas.offsetTop;
 		console.log(this.x + " " + this.y);
     }
-    mouseUp = (event: MouseEvent) => {
+   public mouseUp = (event: MouseEvent) => {
         //window.removeEventListener("mousemove", this.mouseMove);
     }
 
@@ -79,11 +79,8 @@ export let tTitle = "France";
 export let tParis = "Paris";
 
 export let cPixel = "rgb(200,100,100)";
-/*
-class Roads {
 
-
-}*/
+export let positionInfoExtractor = new paper.Point(600,300);
 
 
 class Grid {
